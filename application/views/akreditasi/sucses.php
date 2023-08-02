@@ -1,0 +1,1 @@
+<img src="<?php echo base_url()?>/assets/img/product-02.jpg" class="rounded mx-auto d-block" alt="...">
