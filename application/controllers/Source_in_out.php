@@ -18,7 +18,8 @@ class Source_in_out extends CI_Controller{
         $outdata['data'] = $this->DataEx->allDataProfile($idLogin->ID_LOGIN);
         $fix = array($_SESSION['user'], $_SESSION['prodi']);
         $out['data'] = array($fix);
-    	$this->load->view('temp/header',$outdata);
+        $this->frontendui($outdata,$out);
+    	//$this->load->view('temp/header',$outdata);
     	$this->load->view('pegawai/create_data_pegawai',$out);
     }
     function doupload(){
@@ -71,8 +72,8 @@ class Source_in_out extends CI_Controller{
         
     }
     function updatedata(){
-        
-        $namapegawai = $this->input->post('Nama');
+        $this->load->model('DataEx');
+        echo $namapegawai = $this->input->post('Nama');
         $nip = $this->input->post('Nip');
         $pangkat = $this->input->post('Pangkat');
         $prodi = $this->input->post('Prodi');
@@ -91,10 +92,14 @@ class Source_in_out extends CI_Controller{
             'ALAMAT' => $alamat,
             'TMT' => $tanggal
         );
+        $rule = $this->input->post('rule');
         $this->load->model('First');
         $this->First->UpdateUser($dataupdate,$idpegawaiup);
-
-          redirect(site_url('passing/profile'));   
+        If($rule == 6){
+          redirect(site_url('passing/profile/ProfilMhs'));   
+        }else{
+            redirect(site_url('passing/profile'));
+        }
     }
     function inputdatapengmas(){
         $this->load->model('First');
@@ -257,6 +262,7 @@ class Source_in_out extends CI_Controller{
         $tipe = $this->input->post('tipe');
         $namask = $this->First->outsk($idjenissk);
         $idprodi = $this->input->post('idprodi');
+        $departemen = $this->input->post('departemen');
 
         $data['id'] = $this->DataEx->lastdata($db1,$db2);
         foreach ($data['id']  as $value){
@@ -290,7 +296,8 @@ class Source_in_out extends CI_Controller{
                     'LOKASI_BERKAS' => $config['file_name'].'.'.$tipe,
                     'NAMA_MHS' => ' ',
                     'TYPE_FILE' => $tipe,
-                    'ID_PRODI' => $idprodi
+                    'ID_PRODI' => $idprodi,
+                    'NAMA_DEPARTEMEN' => $departemen
                     
                 );
                 $this->upload->do_upload('berkas');
@@ -300,6 +307,53 @@ class Source_in_out extends CI_Controller{
             
         }
     }
+
+    function insertberkasmas(){
+        $this->load->model('Mahasiswa');
+
+        $db1 = 'berkasmhs';
+        $iddatapkl = $this->input->post('idpkl');
+        $idmhs = $this->input->post('idmhs');
+        $berkasmagang = $this->input->post('berkasmagang');
+        $tipe = 'pdf';
+        $up = 2;
+        
+        if($this->input->method() === 'post'){
+            $namafile = $idmhs.'_'.$iddatapkl.'_'.$db1;
+            $config['upload_path']      = 'upload\berkasmhs';
+            $config['allowed_types']    = 'pdf|zip';
+            $config['file_name']        = $namafile;
+            $config['overwrite']        = true;
+            $config['max_size']         = 20240; //10MB
+            $config['max_width']        = 1080;
+            $config['max_height']       = 1080;
+
+            $this->load->library('upload');
+            $this->upload->initialize($config);
+            
+            if(!$this->upload->do_upload('berkasmagang')){
+                $error = array("error"=> $this->upload->display_errors());
+                $this->load->view('upload_form',$error);
+            }else{
+
+                $databerkas = array(
+                    'ID_BERKAS' => ' ',
+                    'ID_DATA_PKL' => $iddatapkl,
+                    'ID_PEGAWAI' => $idmhs,
+                    'BERKAS_MAHASIsWA' => $namafile,
+                    'LINK_BERKAS' => $config['file_name'].'.'.$tipe                    
+                );
+                
+                $this->upload->do_upload('berkas');
+                $update = $this->Mahasiswa->updatedatapkl($up,$iddatapkl);
+                $insertdb = $this->Mahasiswa->uploadberkasmhs($databerkas);
+                echo '<script type="text/javascript"> window.onload = function(){alert("Upload Berkas Tertandatangani WD1 berhasil");}</script>';
+                redirect(site_url('Backbone/detailpengajuan'));
+            }
+            
+        }
+    }
+
     function insertsurat(){
         $this->load->model('First');
         $this->load->model('DataEx');
@@ -367,6 +421,7 @@ class Source_in_out extends CI_Controller{
         $idpegawai = $this->DataEx->idpegawai($idLogin->ID_LOGIN);
         $berkas['mail'] = $this->DataEx->findmail($idpegawai->ID_PEGAWAI)->num_rows();
         $out['data'] = array($fix);
+        $this->frontendview($outdata,$out);
         $this->load->view('temp/header',$berkas);
         $link = $this->uri->segment(3,0);
         $berkas = $this->uri->segment(4,0);
@@ -517,35 +572,107 @@ class Source_in_out extends CI_Controller{
 
         if(empty($jenisberkas)){
             $target = base_url().'upload/sk/'.$file;
-            echo '<script language="javascript">';
+            echo '<script">';
             echo 'alert("Anda akan menghapus data ini yakin?")';
             echo '</script>';
             $this->DataEx->deletedata($idberkas);
         }else{
             $target = base_url().'upload/skmengajar/'.$file;
-            echo '<script language="javascript">';
+            echo '<script">';
             echo 'alert("Anda akan menghapus berkas sk ini.... yakin?")';
             echo '</script>';
             $this->DataEx->delberkassk($idberkas);
             $this->deldatask($target);
         }
-        
-        
+    
     }
     function deldatask($target){
         if(file_exists($target)){
             unlink($target);
-             echo '<script language="javascript">';
+            echo '<script">';
             echo 'alert("file anda berhasil dihapus")';
             echo '</script>';
         }
         else{
-            echo '<script language="javascript">';
+            echo '<script">';
             echo 'alert("mohon cek kembali permasalahan  dari file anda")';
             echo '</script>';
         
         }
         redirect(site_url('Passing/profile').'/pegawai/'.hash('sha256',$_SESSION['user']));
+    }
+    function frontendview($outdata, $out){
+        //countdown time active
+           /* $end_time = strtotime("2024-02-29 23:59:59"); // Countdown end time
+            $current_time = time(); // Current timestamp
+            $time_left = $end_time - $current_time; // Time remaining in seconds
+
+            $days = floor($time_left / 86400); // 86400 seconds in a day
+            $time_left = $time_left % 86400;
+            $outdata['timeleft'] = $days;*/
+        //
+        
+        if ($_SESSION['rule'] == 2){
+            $outdata['title'] = 'ADEMI';
+            $outdata['header'] = array('Profile','persuratan'); 
+           // $this->timelaps();
+            $this->load->view('login/headerlog',$outdata);
+            $this->load->view('login/sidebardosen',$outdata);
+            $this->load->view('login/topbar',$outdata);
+           }
+           elseif ($_SESSION['rule'] == 1){
+                $outdata['title'] = 'ADEMI';
+                $outdata['header'] = array(''); 
+                //$this->timelaps();
+                $this->load->view('login/headerlog',$outdata);
+                $this->load->view('admin/sidebaradmin',$outdata);
+                $this->load->view('login/topbar',$outdata);              
+            }
+                elseif ($_SESSION['rule'] == 4){
+                    $outdata['title'] = 'ADEMI';
+                    $outdata['header'] = array('BERKAS_MBKM','PENGAMBILAN_DATA','UNDUR_DIRI','CUTI','BEBAN_MENGAJAR'); 
+                    $outdata['head'] = array('SK_MENGAJAR','SK_DOSEN_WALI','SK_DOSEN_PJMK','SK_PEMBIMBING_TA','PLOTING_JADWAL','BEBAN_MENGAJAR');
+                    $this->load->model('Page');
+                    $dat = 0;
+                    $outdata['alert'] = $this->Page->alertMagang($dat)->num_rows();
+                    $outdata['alertambil'] = $this->Page->alertambildata($dat)->num_rows();
+                    //$this->timelaps();
+                    $this->load->view('login/headerlog',$outdata);
+                    $this->load->view('login/sidebarfakultas',$outdata);
+                    $this->load->view('login/topbar',$outdata);  
+                }elseif ($_SESSION['rule'] == 5){
+                        $outdata['title'] = 'ADEMI';
+                        $outdata['header'] = array('Profile','persuratan'); 
+                       // $this->timelaps();
+                        $this->load->view('login/headerlog',$outdata);
+                        $this->load->view('login/sidebar',$outdata);
+                        $this->load->view('login/topbar',$outdata);               
+                    }elseif ($_SESSION['rule'] == 6){
+                        $outdata['title'] = 'ADEMI';
+                        $outdata['header'] = array('Profile'); 
+                        //$this->timelaps();
+                        $this->load->view('login/headerlog',$outdata);
+                        $this->load->view('login/sidebarmhs',$outdata);
+                        $this->load->view('login/topbar',$outdata);               
+                        }
+                        else {
+                            $this->load->model('Page');
+                                    $dataidprod = $this->DataEx->allDataProfile($idLogin->ID_LOGIN);
+                                    foreach($dataidprod as $keys){
+                                    $idprodi = $keys['ID_PRODI'];
+                                    }
+                                    $dat = 0;
+                                    
+                                    $outdata['alertambildata'] = $this->Page->alertambildataprodi($dat,$idprodi)->num_rows();
+                                    $outdata['alertmagangprodi'] = $this->Page->alertmagangprodi($dat,$idprodi)->num_rows();
+                                    $outdata['alertyudisium'] = $this->Page->alertyudisium($dat,$idprodi)->num_rows();
+                            $outdata['title'] = 'ADEMI';
+                            $outdata['header'] = array('Profile','SK_PRODI', 'Kepegawaian'); 
+                            //$this->timelaps();
+                            $this->load->view('login/headerlog',$outdata);
+                            $this->load->view('login/sidebar',$outdata);
+                            $this->load->view('login/topbar',$outdata);
+                        }
     }
     
 
