@@ -46,6 +46,8 @@
                         <a class="collapse-item" href="<?php echo site_url('Admin/first');?>">MONITORING</a>
                         <a class="collapse-item" href="<?php echo site_url('Admin/useractivity')?>">ACTIVITY</a>
                         <a class="collapse-item" href="<?php echo site_url('Admin/createnews')?>">CREATE NEWS</a>
+                        <a class="collapse-item" href="<?php echo site_url('Admin/redudant')?>">Redudant Data</a>
+                        <a class="collapse-item" href="<?php echo site_url('Admin/setperiode')?>">Set Periode Yudisium</a>
                         <a class="collapse-item" href="#">ASK SCURITY</a>
                     </div>
                 </div>
