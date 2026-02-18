@@ -82,11 +82,21 @@ class Akreditasi extends CI_Controller{
         $_SESSION['idpegawai'] = $idpegawai->ID_PEGAWAI; 
         $out['data'] = array($_SESSION['user'], $_SESSION['prodi'], $_SESSION['rule'],$_SESSION['idpegawai']);
 
-        	$outdata['title'] = 'simlib V2';
+        if($_SESSION['rule'] == 2 ){
+        	$outdata['title'] = 'Ademi';
             $outdata['header'] = array('Profile','persuratan'); 
+            //$this->timelaps();
             $this->load->view('login/headerlog',$outdata);
             $this->load->view('login/sidebardosen',$outdata);
             $this->load->view('login/topbar',$outdata);
+        }else{
+            $outdata['title'] = 'Ademi';
+            $outdata['header'] = array('Profile','persuratan'); 
+            //$this->timelaps();
+            $this->load->view('login/headerlog',$outdata);
+            $this->load->view('login/sidebar',$outdata);
+            $this->load->view('login/topbar',$outdata);
+        }
     }
     function uploadberkasborang(){
 
@@ -183,6 +193,26 @@ class Akreditasi extends CI_Controller{
             
         }
     }
+   /* function timelaps(){
+        $end_time = strtotime("2024-02-28 23:59:59"); // Countdown end time
+        $current_time = time(); // Current timestamp
+        $time_left = $end_time - $current_time; // Time remaining in seconds
+
+        $days = floor($time_left / 86400); // 86400 seconds in a day
+        $time_left = $time_left % 86400;
+
+        $hours = floor($time_left / 3600); // 3600 seconds in an hour
+        $time_left = $time_left % 3600;
+
+        $minutes = floor($time_left / 60); // 60 seconds in a minute
+        $seconds = $time_left % 60;
+        $outdata['timeleft'] = $days;
+        $outdata['hours'] = $hours;
+        $outdata['minute'] = $minutes;
+        $outdata['seconds'] = $seconds;
+
+        $this->load->view('login/alertmodal',$outdata);
+    }*/
     function download(){
         $this->load->library('zip','docx','doc','pdf','jpg','JPG');
         $this->load->helper('download');
