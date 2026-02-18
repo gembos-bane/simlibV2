@@ -51,7 +51,35 @@ function __construct(){
 	function insertbuktiborang($data){
 		return $this->db->insert('bukti_borang', $data);
 	}
+	function redudant($data){
+		$this->db->select('*');
+		$this->db->from('data_pkl');
+		$this->db->join('data_mahasiswa_pkl','data_mahasiswa_pkl.ID_DATA_PKL = data_pkl.ID_DATA_PKL');
+		$this->db->join('tujuan','tujuan.ID_TUJUAN = data_pkl.ID_TUJUAN');
+		$this->db->join('user','user.ID_PEGAWAI = data_pkl.ID_PEGAWAI');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = data_pkl.ID_PRODI');
+		$this->db->join('nama_dosen','nama_dosen.ID_NAMA_DOSEN = data_pkl.ID_NAMA_DOSEN');
+		$this->db->where('data_pkl.RESPONS',$data);
+		return $this->db->get()->result_array();
+	}
+	function delredudant($id){
+		$this->db->delete('data_mahasiswa_pkl', array('ID_MHS_PKL' => $id));
+	}
+	function delredudantrespons($res){
+		$this->db->delete('data_pkl', array('RESPONS' => $res));
+	}
+	function datapkl($id){
+		$this->db->select('*');
+		$this->db->from('data_mahasiswa_pkl');
+		$this->db->where('data_mahasiswa_pkl.ID_MHS_PKL',$id);
+		return $this->db->get()->result_array();
+	}
+	function updatePeriode($data,$id){
+		$this->db->set('periode_yudisium.AKTIFASI',$data);
+		$this->db->where('ID_PERIODE',$id);
+		return $this->db->update('periode_yudisium');
 
+	}
 }
 
  ?>
