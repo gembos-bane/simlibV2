@@ -31,6 +31,14 @@ class First extends CI_Model{
         $OUT = $this->db->get();
         return $OUT;
     }
+    function checkpass($data){
+        $this->db->select('*');
+        $this->db->from('login');
+        $this->db->where('login.LOGIN_USER',$data);
+        $pass = $this->db->get();
+        return $pass;
+
+    }
     function checkProd($id){
         
         $this->db->select('*');
@@ -51,6 +59,13 @@ class First extends CI_Model{
         $data_prodi = $this->db->get()->result();
         return $data_prodi;
     }
+    function prodidep($iddep){
+        $this->db->select('*');
+        $this->db->from('data_prodi');
+        $this->db->where('ID_DEPARTEMEN', $iddep);
+        $data_prodi = $this->db->get();
+        return $data_prodi;
+    }
     function hasing($user, $pass){
         $this->db->select('HASH_LOG');
         $this->db->from('login');
@@ -59,6 +74,12 @@ class First extends CI_Model{
         $data = $this->db->get();
         return $data;
 
+    }
+    function departemen(){
+        $this->db->select('*');
+        $this->db->from('departemen');
+        $data = $this->db->get();
+        return $data;
     }
     function selectId($username){
         $this->db->select('ID_LOGIN');
