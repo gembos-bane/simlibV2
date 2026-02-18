@@ -1,5 +1,5 @@
 <div class="container">
-	<div class="container container-fluid">
+	<div class="container overflow-hidden">
         <table class="table table-responsive">
             <thead>
                 <tr>
@@ -7,6 +7,7 @@
                     <th scope="col-sm-4">NAMA SK</th>
                     <th scope="col-sm-2">TAHUN SK</th>
                     <th scope="col-sm-2">SEMESTER</th>
+                    <th scope="col-sm-2">DEPARTEMEN</th>
                     <th scope="col-sm-3">ACTION</th>
                 </tr>
             </thead>
@@ -21,6 +22,7 @@
                     <td scope="col-sm-4"><?php echo $value['JENIS_SK'];?></td>
                     <td scope="col-sm-2"><?php echo $value['TAHUN_AKD'];?></td>
                     <td scope="col-sm-2"><?php echo $value['SEMESTER'];?></td>
+                    <td scope="col-sm-2"><?php echo $value['NAMA_DEPARTEMEN'];?></td>
                     <td scope="col-sm-3">
                             <a href="<?php echo site_url('Passing/showall') ?>/skmengajar/<?php echo $value['LOKASI_BERKAS'];?>/<?php echo $value['TYPE_FILE'];?>/<?php echo $value['ID_JENIS_SK'];?> " target="blank"><button class="btn btn-info" >Berkas</button></a>
                             

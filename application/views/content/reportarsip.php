@@ -2,7 +2,7 @@
 <div class="content">
     <div class="card">
         <div class="card-body">
-            <a style='text-decoration: none;' href="<?php echo site_url('API/printexcel');?>" target="blank"><button class="btn btn-info"><i class="fa fa-file-excel-o" aria-hidden="true"> </i>&nbsp;<text class='text text-white'>Report in Excel</text></button></a>
+            <a style='text-decoration: none;' href="<?php echo site_url('API/printexcel');?>" target="blank"><button class="btn btn-warning"><i class="fa fa-file-excel-o" aria-hidden="true"> </i>&nbsp;<text class='text text-white'>Report in Excel</text></button></a>
         </div>
     </div>
 </div>

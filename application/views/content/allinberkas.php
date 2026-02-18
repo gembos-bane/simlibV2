@@ -10,12 +10,8 @@
       <div class="accordion-body">
         <!-- colapse content -->
         <div class="container overflow-hidden">
-          <div class="content container-fluid">
           
-          </div>
           <div class="container-fluid">&nbsp;</div>
-          
-          
               <table class="table table-hover">    
                 <thead>
                     <tr class="alert-primary">
