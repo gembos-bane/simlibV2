@@ -41,27 +41,31 @@ class Page Extends CI_Model{
 		$data = $this->db->where('ID_PRODI',$id)->get('persuratan');
 		return $data->num_rows();
 	}
+	function count_yudisium($id){
+		$data = $this->db->where('ID_PRODI',$id)->get('daftar_yudisium');
+		return $data->num_rows();
+	}
 	function count_persuratan_dep($id){
 		$data = $this->db->where('ID_PENGIRIM',$id)->get('persuratan');
 		return $data->num_rows();
 	}
-	function get_limit_surat($limit, $start,$id){
+	function get_limit_surat($limit,$start,$id){
 		$this->db->select('*');
         $this->db->from('persuratan');
         $this->db->join('jenis_surat', 'jenis_surat.ID_JENIS_SURAT = persuratan.ID_JENIS_SURAT');
         $this->db->where('persuratan.ID_PRODI',$id);
-		$this->db->order_by('persuratan.ID_SURAT', 'ASC');
+		$this->db->order_by('persuratan.ID_SURAT', 'DESC');
 		$this->db->limit($limit,$start);
 		$data = $this->db->get()->result_array();
 		return $data;
 	}
-	function get_limit_surat_dep($limit, $start,$id){
+	function get_limit_surat_dep($limit,$start,$id){
 		$this->db->select('*');
         $this->db->from('jenis_surat');
         $this->db->join('persuratan', 'persuratan.ID_JENIS_SURAT = jenis_surat.ID_JENIS_SURAT');
         $this->db->join('data_prodi','data_prodi.ID_PRODI = persuratan.ID_PRODI');
         $this->db->where('ID_PENGIRIM',$id);
-		$this->db->order_by('ID_SURAT', 'ASC');
+		$this->db->order_by('ID_SURAT', 'DESC');
 		$this->db->limit($limit,$start);
 		$data = $this->db->get()->result_array();
 		return $data;
@@ -69,6 +73,84 @@ class Page Extends CI_Model{
 	function get_count_admin(){
 		$data = $this->db->get('user');
 		return $data->num_rows();
+	}
+	function get_count_pengajuan($id){
+		$this->db->select('*');
+		$this->db->from('data_mahasiswa_pkl');
+		$this->db->where('ID_PRODI',$id);
+		$data = $this->db->get()->num_rows();
+		return $data;
+	}
+	function get_limit_pengajuan($limit,$start,$id){
+		$this->db->select('*');
+        $this->db->from('data_mahasiswa_pkl');
+        $this->db->join('data_pkl', 'data_pkl.ID_DATA_PKL = data_mahasiswa_pkl.ID_DATA_PKL');
+        $this->db->join('data_prodi','data_prodi.ID_PRODI = data_mahasiswa_pkl.ID_PRODI');
+        $this->db->join('tujuan','tujuan.ID_TUJUAN = data_pkl.ID_TUJUAN');
+        $this->db->join('user','user.ID_PEGAWAI=data_pkl.ID_PEGAWAI');
+        $this->db->where('data_pkl.ID_PRODI',$id);
+		$this->db->order_by('data_pkl.ID_DATA_PKL', 'ASC');
+		$this->db->limit($limit,$start);
+		$data = $this->db->get()->result_array();
+		return $data;
+	}
+	function get_limit_report_fak($limit,$start,$data){
+		$this->db->select('*');
+		$this->db->from('data_pkl');
+		$this->db->join('data_mahasiswa_pkl','data_mahasiswa_pkl.ID_DATA_PKL = data_pkl.ID_DATA_PKL');
+		$this->db->join('tujuan','tujuan.ID_TUJUAN = data_pkl.ID_TUJUAN');
+		$this->db->join('user','user.ID_PEGAWAI = data_pkl.ID_PEGAWAI');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = data_pkl.ID_PRODI');
+		$this->db->where('data_pkl.RESPONS',$data);
+		$this->db->limit($limit,$start);
+		return $data = $this->db->get()->result_array(); 
+	}
+	function get_limit_ambil_data($limit,$start,$data){
+		$this->db->select('*');
+		$this->db->from('ambil_data');
+		$this->db->join('tujuan','tujuan.ID_TUJUAN = ambil_data.ID_TUJUAN');
+		$this->db->join('user','user.ID_PEGAWAI = ambil_data.ID_PEGAWAI');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = ambil_data.ID_PRODI');
+		$this->db->where('ambil_data.STATUS_PROSES',$data);
+		$this->db->limit($limit,$start);
+		return $data = $this->db->get()->result_array(); 
+	}
+	function searchname($data){
+		$this->db->select('*');
+		$this->db->from('data_pkl');
+		$this->db->join('data_mahasiswa_pkl','data_mahasiswa_pkl.ID_DATA_PKL = data_pkl.ID_DATA_PKL');
+		$this->db->join('tujuan','tujuan.ID_TUJUAN = data_pkl.ID_TUJUAN');
+		$this->db->join('user','user.ID_PEGAWAI = data_pkl.ID_PEGAWAI');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = data_pkl.ID_PRODI');
+		$this->db->like('data_pkl.NAMA_PEGAWAI',$data);
+		$out = $this->db->get();
+
+		$outsearch = array();
+		foreach ($out->result() as $key) {
+			$outsearch[] = $key->NAMA_PEGAWAI;
+		}
+		return $outsearch;
+	}
+	function get_count_report_fak($data){
+		$this->db->select('*');
+		$this->db->from('data_pkl');
+		$this->db->join('data_mahasiswa_pkl','data_mahasiswa_pkl.ID_DATA_PKL = data_pkl.ID_DATA_PKL');
+		$this->db->join('tujuan','tujuan.ID_TUJUAN = data_pkl.ID_TUJUAN');
+		$this->db->join('user','user.ID_PEGAWAI = data_pkl.ID_PEGAWAI');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = data_pkl.ID_PRODI');
+		$this->db->where('data_pkl.RESPONS',$data);
+		$data = $this->db->get()->num_rows();
+		return $data;
+	}
+	function get_count_report_ambil_data($data){
+		$this->db->select('*');
+		$this->db->from('ambil_data');
+		$this->db->join('tujuan','tujuan.ID_TUJUAN = ambil_data.ID_TUJUAN');
+		$this->db->join('user','user.ID_PEGAWAI = ambil_data.ID_PEGAWAI');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = ambil_data.ID_PRODI');
+		$this->db->where('ambil_data.STATUS_PROSES',$data);;
+		return $data = $this->db->get()->num_rows(); 
+
 	}
 	function get_limit_admin($limit, $start){
 		$this->db->select('*');
@@ -129,6 +211,63 @@ class Page Extends CI_Model{
 	function delberkassk($idberkas){
 		$this->db->delete('bekas_akademik',array('ID_BERKAS_AKD'=>$idberkasakd));
 	}
-	
+	function alertMagang($dat){
+		$this->db->select('*');
+		$this->db->from('data_pkl');
+		$this->db->where('RESPONS',$dat);
+		$data = $this->db->get();
+		return $data;
+	}
+	function alertambildata($dat){
+		$this->db->select('*');
+		$this->db->from('ambil_data');
+		$this->db->where('STATUS_PROSES',$dat);
+		$data = $this->db->get();
+		return $data;
+	}
+	function alertyudisiumdep($dat){
+		$this->db->select('*');
+		$this->db->from('daftar_yudisium');
+		$this->db->where('PROSES',$dat);
+		$this->db->where('ID_PRODI',$idprodi);
+		$data = $this->db->get();
+		return $data;
+	}
+	function alertambildataprodi($dat,$idprodi){
+		$this->db->select('*');
+		$this->db->from('ambil_data');
+		$this->db->where('STATUS_PROSES',$dat);
+		$this->db->where('ID_PRODI', $idprodi);
+		$data = $this->db->get();
+		return $data;
+	}
+	function alertyudisium($dat,$idprodi){
+		$this->db->select('*');
+		$this->db->from('daftar_yudisium');
+		$this->db->where('PROSES',$dat);
+		$this->db->where('ID_PRODI',$idprodi);
+		$data = $this->db->get();
+		return $data;
+	}
+	function alertmagangprodi($dat,$idprodi){
+		$this->db->select('*');
+		$this->db->from('data_pkl');
+		$this->db->where('RESPONS',$dat);
+		$this->db->where('ID_PRODI',$idprodi);
+		$data = $this->db->get();
+		return $data;
+	}
+	function periodeaktif($aktif){
+		$this->db->select('*');
+		$this->db->from('periode_yudisium');
+		$this->db->where('AKTIFASI',$aktif);
+		return $data = $this->db->get();
+	}
+	function rule($id){
+		$this->db->select('*');
+		$this->db->from('log_pas_rule');
+		$this->db->where('ID_RULE', $id);
+		return $this->db->get()->result();
+	}
 }
 ?>
