@@ -23,7 +23,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://10.11.2.184/simlib_v2/';
+$config['base_url'] = 'http://10.11.8.50/ademi/';
 
 /*
 |--------------------------------------------------------------------------
@@ -390,7 +390,8 @@ $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
-$config['sess_regenerate_destroy'] = FALSE;
+$config['sess_regenerate_destroy'] = TRUE;
+$config['sess_expiration_on_close'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------
