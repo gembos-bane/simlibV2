@@ -30,6 +30,7 @@ class DataEx Extends CI_Model{
 		$this->db->from('user');
 		$this->db->join('log_pas_rule','log_pas_rule.ID_RULE = user.ID_RULE');
 		$this->db->join('data_prodi','data_prodi.ID_PRODI = user.ID_PRODI');
+		$this->db->join('departemen','departemen.ID_DEPARTEMEN = data_prodi.ID_PRODI');
 		$this->db->where('ID_LOGIN',$id);
 		$data = $this->db->get()->result_array();
 		return $data;
@@ -182,7 +183,13 @@ class DataEx Extends CI_Model{
 		$data = $this->db->get()->result();
 		return $data;
 	}
-
+	function namadosen($id){
+		$this->db->select('*');
+		$this->db->from('nama_dosen');
+		$this->db->where('ID_PRODI',$id);
+		$data = $this->db->get()->result();
+		return $data;
+	}
     function findmail($id){
 		$this->db->select('*');
 		$this->db->from('mailing');
@@ -218,5 +225,63 @@ class DataEx Extends CI_Model{
 		$this->db->where('ID_SURAT',$id);
 		$query = $this->db->get()->result_array();
 		return $query;
+	}
+	function lupa($data){
+		$this->db->select('*');
+		$this->db->from('user');
+		$this->db->join('login','login.ID_LOGIN = user.ID_LOGIN');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = user.ID_PRODI');
+		$this->db->where('E_MAIL',$data);
+		return $data = $this->db->get();
+	}
+	function yudprodi($prodi_id, $idperiode){
+		$this->db->select('*');
+		$this->db->from('daftar_yudisium');
+		$this->db->join('periode_yudisium','periode_yudisium.ID_PERIODE = daftar_yudisium.ID_PERIODE');
+		$this->db->join('member_yudisium', 'member_yudisium.ID_PRODI = daftar_yudisium.ID_PRODI');
+		$this->db->where('daftar_yudisium.ID_PRODI',$prodi_id);
+		$this->db->where('member_yudisium.ID_PERIODE',$idperiode);
+		return $this->db->get()->result();
+	}
+	function periodeyudi(){
+		$this->db->select('*');
+		$this->db->from('periode_yudisium');
+		$this->db->join('semester','semester.ID_SEMESTER = periode_yudisium.ID_SEMESTER');
+		$this->db->order_by('ID_PERIODE','DESC');
+		$this->db->limit(1);
+		return $this->db->get();
+	}
+	function periodeyudout(){
+		return $this->db->get('periode_yudisium');
+	}
+	function periodout($idperiod){
+		$this->db->select('*');
+		$this->db->from('periode_yudisium');
+		$this->db->join('semester','semester.ID_SEMESTER = periode_yudisium.ID_SEMESTER');
+		$this->db->where('ID_PERIODE',$idperiod);
+		return $this->db->get()->result();
+	}
+	function outpendaftar($idprodi,$idperiod){
+		$this->db->select('*');
+		$this->db->from('daftar_yudisium');
+		$this->db->join('data_prodi','data_prodi.ID_PRODI = daftar_yudisium.ID_PRODI');
+		$this->db->join('periode_yudisium','periode_yudisium.ID_PERIODE = daftar_yudisium.ID_PERIODE');
+		$this->db->join('member_yudisium','member_yudisium.ID_PERIODE = daftar_yudisium.ID_PERIODE');
+		$this->db->where('daftar_yudisium.ID_PRODI',$idprodi);
+		$this->db->where('daftar_yudisium.ID_PERIODE',$idperiod);
+		return $this->db->get()->result();
+	} 
+	public function outyudis($iddepar, $idperiod){
+		$this->db->select('data_prodi.NAMA_PRODI, data_prodi.ID_PRODI, periode_yudisium.ID_PERIODE, COUNT(daftar_yudisium.ID_PEGAWAI) as JUMLAH_DAFTAR');
+		$this->db->from('data_prodi');
+		$this->db->join('departemen','departemen.ID_DEPARTEMEN = data_prodi.ID_DEPARTEMEN');
+		$this->db->join('daftar_yudisium','daftar_yudisium.ID_PRODI = data_prodi.ID_PRODI');
+		$this->db->join('periode_yudisium','periode_yudisium.ID_PERIODE = daftar_yudisium.ID_PERIODE','left');
+		$this->db->where('data_prodi.ID_DEPARTEMEN',$iddepar);
+		$this->db->where('daftar_yudisium.ID_PERIODE',$idperiod);
+		$this->db->group_by('data_prodi.NAMA_PRODI, data_prodi.ID_PRODI');
+		$this->db->order_by('data_prodi.ID_DEPARTEMEN','asc');
+		return $this->db->get()->result();
+		
 	}
 }
