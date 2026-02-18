@@ -95,3 +95,4 @@ $db['default'] = array(
 	'save_queries' => TRUE,
 
 );
+$db['default']['option'] = array(PDO::ATTR_TIMEOUT => 5 );
